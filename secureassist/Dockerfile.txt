@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install Python packages
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend code
+COPY backend/ .
+
+# Create directories
+RUN mkdir -p logs uploads chroma_db models
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]

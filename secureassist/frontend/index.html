@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureAssist | Internal AI Knowledge Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.crossorigin" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0A0E27;
+            --secondary-dark: #1A1F3A;
+            --accent-cyan: #00FFF0;
+            --accent-magenta: #FF0080;
+            --accent-purple: #A855F7;
+            --success: #00FF94;
+            --warning: #FFB800;
+            --danger: #FF4757;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B4B9D3;
+            --text-muted: #6B7199;
+            --surface: #14182E;
+            --surface-elevated: #1E2442;
+            --surface-hover: #252B4A;
+            --border: rgba(0, 255, 240, 0.2);
+            --glow-cyan: rgba(0, 255, 240, 0.4);
+            --glow-magenta: rgba(255, 0, 128, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Grid Background */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 240, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 240, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatOrb 15s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            top: 10%;
+            left: 5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-cyan), transparent);
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            bottom: 10%;
+            right: 10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-magenta), transparent);
+            animation-delay: 5s;
+        }
+
+        .orb-3 {
+            top: 50%;
+            right: 30%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-purple), transparent);
+            animation-delay: 10s;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(60px, -40px) scale(1.15); }
+            66% { transform: translate(-40px, 60px) scale(0.85); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.9);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 3rem;
+            z-index: 1000;
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px var(--glow-cyan);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px var(--glow-cyan); }
+            50% { box-shadow: 0 0 40px var(--glow-cyan), 0 0 60px var(--glow-magenta); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            color: var(--text-primary);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 255, 240, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 255, 240, 0.5);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 3rem 4rem;
+            z-index: 2;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text {
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .hero-badge::before {
+            content: '🔒';
+            font-size: 1rem;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 16px 36px;
+            font-size: 1.1rem;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        /* Interactive Chat Demo */
+        .chat-demo {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-demo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta), var(--accent-purple));
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .chat-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .chat-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .chat-messages {
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            padding-right: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--surface-elevated);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--accent-cyan);
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            animation: messageSlide 0.4s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .message-content {
+            background: var(--surface-elevated);
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .message.assistant .message-content {
+            background: linear-gradient(135deg, rgba(0, 255, 240, 0.1), rgba(255, 0, 128, 0.1));
+            border-color: var(--accent-cyan);
+        }
+
+        .source-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: rgba(0, 255, 240, 0.1);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .source-link:hover {
+            background: rgba(0, 255, 240, 0.2);
+            transform: translateX(4px);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 255, 240, 0.1);
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px var(--glow-cyan);
+        }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            padding: 6rem 3rem;
+            z-index: 2;
+        }
+
+        .features-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-magenta);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 240, 0.05), rgba(255, 0, 128, 0.05));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 20px 60px rgba(0, 255, 240, 0.2);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        /* Capabilities Section */
+        .capabilities {
+            position: relative;
+            padding: 6rem 3rem;
+            background: var(--surface);
+            z-index: 2;
+        }
+
+        .capabilities-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .capability-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .capability-item {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .capability-item:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(8px);
+            background: var(--surface-hover);
+        }
+
+        .capability-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-magenta));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .capability-content h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .capability-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .capability-visual {
+            position: relative;
+        }
+
+        .terminal-window {
+            background: var(--primary-dark);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .terminal-header {
+            background: var(--surface-elevated);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #FF5F56; }
+        .dot-yellow { background: #FFBD2E; }
+        .dot-green { background: #27C93F; }
+
+        .terminal-content {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            animation: typeLine 0.5s ease-out;
+        }
+
+        @keyframes typeLine {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .terminal-prompt {
+            color: var(--accent-cyan);
+        }
+
+        .terminal-success {
+            color: var(--success);
+        }
+
+        .terminal-warning {
+            color: var(--warning);
+        }
+
+        /* Stats Section */
+        .stats {
+            position: relative;
+            padding: 6rem 3rem;
+            z-index: 2;
+        }
+
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* CTA Section */
+        .cta {
+            position: relative;
+            padding: 6rem 3rem;
+            z-index: 2;
+        }
+
+        .cta-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(0, 255, 240, 0.1), rgba(255, 0, 128, 0.1));
+            border: 2px solid var(--border);
+            border-radius: 30px;
+            padding: 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 240, 0.1), transparent);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .cta-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 4rem 3rem 2rem;
+            z-index: 2;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--accent-cyan);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .hero-content,
+            .capabilities-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-description {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero,
+            .features,
+            .capabilities,
+            .stats,
+            .cta {
+                padding: 4rem 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+            padding: 12px 0;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">SA</div>
+                <span>SecureAssist</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#capabilities">Capabilities</a></li>
+                <li><a href="#security">Security</a></li>
+                <li><a href="#docs">Documentation</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>System Online</span>
+                </div>
+                <button class="btn-primary" onclick="openDemo()">Launch Assistant</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">Secure • Offline • Compliant</div>
+                <h1>Your Internal AI Knowledge Assistant</h1>
+                <p class="hero-description">
+                    Fast, accurate answers from your SOPs, policies, and internal knowledge. 
+                    Enforce compliance, trace sources, and boost productivity—all offline, 
+                    with zero external data sharing.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn-primary btn-large" onclick="openDemo()">
+                        Try Demo
+                        <span>→</span>
+                    </button>
+                    <button class="btn-secondary btn-large" onclick="scrollToFeatures()">
+                        Explore Features
+                        <span>↓</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Chat Demo -->
+            <div class="chat-demo">
+                <div class="chat-header">
+                    <div class="chat-avatar">SA</div>
+                    <div class="chat-info">
+                        <h3>SecureAssist</h3>
+                        <p>Internal AI Assistant</p>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message user">
+                        <div class="message-label">You</div>
+                        <div class="message-content">
+                            Can I post content about cryptocurrency projects on r/investing?
+                        </div>
+                    </div>
+                    <div class="message assistant">
+                        <div class="message-label">SecureAssist</div>
+                        <div class="message-content">
+                            <p><strong>⚠️ Policy Alert:</strong> r/investing is on the restricted list for cryptocurrency promotional content.</p>
+                            <p style="margin-top: 12px;">According to SOP-Reddit-2024, posts about specific cryptocurrency projects are prohibited on r/investing due to their strict no-promotion rules.</p>
+                            <p style="margin-top: 12px;"><strong>✅ Approved alternatives:</strong> r/CryptoCurrency, r/CryptoMarkets</p>
+                            <a href="#" class="source-link">
+                                📄 Source: SOP-Reddit-2024 § 3.2
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input 
+                        type="text" 
+                        class="chat-input" 
+                        placeholder="Ask about SOPs, policies, or guidelines..."
+                        id="chatInput"
+                        onkeypress="handleChatInput(event)"
+                    />
+                    <button class="send-btn" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="section-header reveal">
+                <div class="section-badge">🚀 Core Features</div>
+                <h2 class="section-title">Everything You Need, Nothing You Don't</h2>
+                <p class="section-description">
+                    Built specifically for teams managing social media content and analysis with strict compliance requirements.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🔒</div>
+                    <h3>100% Offline & Secure</h3>
+                    <p>
+                        Runs entirely on internal infrastructure. Zero external API calls, no cloud dependencies. 
+                        Your data never leaves your network. Full air-gap deployment option available.
+                    </p>
+                    <div class="feature-tags">
+                        <span class="tag">On-Premise</span>
+                        <span class="tag">Zero Trust</span>
+                        <span class="tag">Air-Gapped</span>
+                    </div>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">📚</div>
+                    <h3>SOP-Grounded Answers</h3>
+                    <p>
+                        Trained on your internal knowledge base: SOPs, policies, project notes, spreadsheets, 
+                        and chat histories. Every answer is verified against approved sources.
+                    </p>
+                    <div class="feature-tags">
+                        <span class="tag">RAG Architecture</span>
+                        <span class="tag">Source Linking</span>
+                        <span class="tag">Version Control</span>
+                    </div>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Compliance Checks</h3>
+                    <p>
+                        Hard-coded policy rules prevent violations. Automatically flags banned subreddits, 
+                        prohibited accounts, and restricted content types before submission.
+                    </p>
+                    <div class="feature-tags">
+                        <span class="tag">Auto-Block</span>
+                        <span class="tag">Real-Time</span>
+                        <span class="tag">Custom Rules</span>
+                    </div>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Full Traceability</h3>
+                    <p>
+                        Every answer links to source documents, specific sections, and spreadsheet rows. 
+                        Click through to verify guidance and access underlying references instantly.
+                    </p>
+                    <div class="feature-tags">
+                        <span class="tag">Deep Links</span>
+                        <span class="tag">Citation Engine</span>
+                        <span class="tag">Audit Trail</span>
+                    </div>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">✍️</div>
+                    <h3>Reddit Content Tools</h3>
+                    <p>
+                        Draft posts and comments, analyze engagement patterns, evaluate URLs for policy compliance, 
+                        and get tone/style suggestions aligned with your brand guidelines.
+                    </p>
+                    <div class="feature-tags">
+                        <span class="tag">Content Gen</span>
+                        <span class="tag">Analysis</span>
+                        <span class="tag">Style Check</span>
+                    </div>
+                </div>
+
+                <div class="feature-card reveal">
+                    <div class="feature-icon">📊</div>
+                    <h3>Data Extraction & Summaries</h3>
+                    <p>
+                        Extract video transcripts, summarize internal discussions, process spreadsheets, 
+                        and generate reports. All processing happens locally with no external data exposure.
+                    </p>
+                    <div class="feature-tags">
+                        <span class="tag">OCR</span>
+                        <span class="tag">Transcription</span>
+                        <span class="tag">NLP Processing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Section -->
+    <section class="capabilities" id="capabilities">
+        <div class="capabilities-container">
+            <div>
+                <div class="section-header" style="text-align: left;">
+                    <div class="section-badge">💡 Capabilities</div>
+                    <h2 class="section-title">Built for Your Workflow</h2>
+                    <p class="section-description" style="margin: 0;">
+                        Designed around the real tasks your teams perform every day.
+                    </p>
+                </div>
+
+                <div class="capability-list">
+                    <div class="capability-item">
+                        <div class="capability-icon">🎯</div>
+                        <div class="capability-content">
+                            <h4>Policy Enforcement</h4>
+                            <p>Never recommend banned subreddits or prohibited accounts. Proactive guidance toward approved alternatives with explanation.</p>
+                        </div>
+                    </div>
+
+                    <div class="capability-item">
+                        <div class="capability-icon">📝</div>
+                        <div class="capability-content">
+                            <h4>Content Creation</h4>
+                            <p>Draft Reddit posts and comments that match your brand voice, comply with platform rules, and align with internal guidelines.</p>
+                        </div>
+                    </div>
+
+                    <div class="capability-item">
+                        <div class="capability-icon">🔍</div>
+                        <div class="capability-content">
+                            <h4>URL & Content Analysis</h4>
+                            <p>Evaluate social media URLs for policy compliance, detect potential violations, and assess content risk before posting.</p>
+                        </div>
+                    </div>
+
+                    <div class="capability-item">
+                        <div class="capability-icon">🎥</div>
+                        <div class="capability-content">
+                            <h4>Media Processing</h4>
+                            <p>Extract video transcripts, process images with OCR, and repurpose content—all without cloud services or external APIs.</p>
+                        </div>
+                    </div>
+
+                    <div class="capability-item">
+                        <div class="capability-icon">💬</div>
+                        <div class="capability-content">
+                            <h4>Discussion Summarization</h4>
+                            <p>Condense long internal chat threads, extract action items, and identify key decisions for quick reference.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="capability-visual reveal">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-dot dot-red"></div>
+                        <div class="terminal-dot dot-yellow"></div>
+                        <div class="terminal-dot dot-green"></div>
+                        <span style="margin-left: 12px; font-size: 0.85rem; color: var(--text-muted);">SecureAssist Terminal</span>
+                    </div>
+                    <div class="terminal-content">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span> secureassist query --source sop-reddit
+                        </div>
+                        <div class="terminal-line terminal-success">
+                            ✓ Loading knowledge base...
+                        </div>
+                        <div class="terminal-line terminal-success">
+                            ✓ 1,247 SOPs indexed
+                        </div>
+                        <div class="terminal-line terminal-success">
+                            ✓ 3,892 policy rules active
+                        </div>
+                        <div class="terminal-line" style="margin-top: 12px;">
+                            <span class="terminal-prompt">$</span> Check if "r/wallstreetbets" allowed for stock discussion
+                        </div>
+                        <div class="terminal-line terminal-warning" style="margin-top: 8px;">
+                            ⚠ COMPLIANCE WARNING
+                        </div>
+                        <div class="terminal-line">
+                            r/wallstreetbets: RESTRICTED
+                        </div>
+                        <div class="terminal-line">
+                            Reason: High-risk community (SOP-REDDIT-042)
+                        </div>
+                        <div class="terminal-line terminal-success" style="margin-top: 8px;">
+                            ✓ Approved alternatives: r/stocks, r/investing
+                        </div>
+                        <div class="terminal-line" style="margin-top: 12px;">
+                            <span class="terminal-prompt">$</span> <span class="typing-indicator">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats" id="security">
+        <div class="stats-container">
+            <div class="section-header reveal">
+                <div class="section-badge">📊 Impact</div>
+                <h2 class="section-title">Built for Scale, Designed for Trust</h2>
+                <p class="section-description">
+                    Real metrics from internal deployment testing.
+                </p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card reveal">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Answer Accuracy</div>
+                </div>
+
+                <div class="stat-card reveal">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Data Privacy</div>
+                </div>
+
+                <div class="stat-card reveal">
+                    <div class="stat-number">3.2s</div>
+                    <div class="stat-label">Avg Response Time</div>
+                </div>
+
+                <div class="stat-card reveal">
+                    <div class="stat-number">Zero</div>
+                    <div class="stat-label">External API Calls</div>
+                </div>
+
+                <div class="stat-card reveal">
+                    <div class="stat-number">5,000+</div>
+                    <div class="stat-label">Internal Documents</div>
+                </div>
+
+                <div class="stat-card reveal">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">System Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container reveal">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Transform Your Workflow?</h2>
+                <p class="cta-description">
+                    Join teams already using SecureAssist to make faster, more compliant decisions.
+                </p>
+                <div class="hero-cta" style="justify-content: center;">
+                    <button class="btn-primary btn-large" onclick="openDemo()">
+                        Request Demo
+                        <span>→</span>
+                    </button>
+                    <button class="btn-secondary btn-large" onclick="scrollToTop()">
+                        View Documentation
+                        <span>📚</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>SecureAssist</h3>
+                <p>
+                    Your secure, offline AI assistant for internal knowledge management 
+                    and compliance-first content operations.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="social-link">📧</a>
+                    <a href="#" class="social-link">💬</a>
+                    <a href="#" class="social-link">📱</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#capabilities">Capabilities</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Integration Guides</a></li>
+                    <li><a href="#">Best Practices</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 SecureAssist. All rights reserved. | SBM01 Problem Statement Implementation</p>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Chat functionality
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+
+        const demoResponses = [
+            {
+                question: "What's our policy on engaging with negative comments?",
+                answer: "According to <strong>SOP-Community-Management-2024 § 4.1</strong>, respond to negative comments within 2 hours during business hours. Acknowledge concerns, avoid defensiveness, and escalate to senior team if threats or serious violations occur. Never delete negative comments unless they violate platform rules.",
+                source: "SOP-Community-Management-2024 § 4.1"
+            },
+            {
+                question: "Can I share customer testimonials on r/testimonials?",
+                answer: "<strong>✅ Approved:</strong> r/testimonials allows verified customer testimonials. Ensure you have written consent (Form CT-2024) and follow disclosure requirements. Tag posts with [Company Name] and include disclaimer per SOP-Social-Disclosure § 2.3.",
+                source: "SOP-Social-Disclosure § 2.3"
+            },
+            {
+                question: "How do I extract insights from this video transcript?",
+                answer: "I can help process video transcripts locally. Upload the file or paste the URL, and I'll extract key points, timestamps, quotes, and action items. All processing happens on our secure servers with no external API calls.",
+                source: "Built-in capability: Media Processing Module"
+            }
+        ];
+
+        let demoIndex = 0;
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `
+                <div class="message-label">You</div>
+                <div class="message-content">${message}</div>
+            `;
+            chatMessages.appendChild(userMsg);
+            chatInput.value = '';
+
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulate AI response
+            setTimeout(() => {
+                const response = demoResponses[demoIndex % demoResponses.length];
+                const assistantMsg = document.createElement('div');
+                assistantMsg.className = 'message assistant';
+                assistantMsg.innerHTML = `
+                    <div class="message-label">SecureAssist</div>
+                    <div class="message-content">
+                        <p>${response.answer}</p>
+                        <a href="#" class="source-link">
+                            📄 Source: ${response.source}
+                        </a>
+                    </div>
+                `;
+                chatMessages.appendChild(assistantMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                demoIndex++;
+            }, 1000);
+        }
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Auto-cycle demo messages
+        function cycleDemoMessages() {
+            if (chatInput !== document.activeElement) {
+                const response = demoResponses[demoIndex % demoResponses.length];
+                chatInput.value = response.question;
+                setTimeout(() => {
+                    sendMessage();
+                }, 2000);
+            }
+        }
+
+        // Start demo cycle after 5 seconds of inactivity
+        let demoTimeout;
+        function resetDemoTimeout() {
+            clearTimeout(demoTimeout);
+            demoTimeout = setTimeout(cycleDemoMessages, 8000);
+        }
+
+        chatInput.addEventListener('input', resetDemoTimeout);
+        chatInput.addEventListener('focus', () => clearTimeout(demoTimeout));
+        resetDemoTimeout();
+
+        // Navigation functions
+        function openDemo() {
+            document.querySelector('.chat-input').focus();
+            document.querySelector('.hero').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add smooth scrolling to all anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Parallax effect for orbs
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.orb');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            orbs.forEach((orb, index) => {
+                const speed = (index + 1) * 20;
+                const xOffset = (x - 0.5) * speed;
+                const yOffset = (y - 0.5) * speed;
+                orb.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+            });
+        });
+
+        // Add loading state to buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (!this.classList.contains('send-btn')) {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
